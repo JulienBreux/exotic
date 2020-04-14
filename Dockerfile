@@ -30,7 +30,9 @@ RUN apk --no-cache add git gcc && \
 FROM alpine:3.11
 
 # Labels
-LABEL Maintainer="Julien BREUX <julien.breux@gmail.com>"
+LABEL repository="https://github.com/JulienBreux/exotic"
+LABEL homepage="https://github.com/JulienBreux/exotic"
+LABEL maintainer="Julien BREUX <julien.breux@gmail.com>"
 
 # Copy app binary
 COPY --from=builder /buld/dist/exotic /bin/exotic
