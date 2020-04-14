@@ -1,0 +1,27 @@
+# https://taskfile.dev
+
+version: '2'
+
+silent: true
+
+vars:
+  APP: exotic
+
+tasks:
+  'app:build':
+    desc: 'Build app'
+    cmds:
+      - cmd: 'mkdir -p dist'
+      - cmd: 'go build -v -o ./dist/{{ .APP }} ./cmd/{{ .APP }}'
+  'app:lint':
+    desc: 'Lint app'
+    cmds:
+      - cmd: 'golangci-lint run'
+  'app:test':
+    desc: 'Test app'
+    cmds:
+      - cmd: 'go test ./...'
+  'image:build':
+    desc: 'Build image'
+    cmds:
+      - cmd: 'docker build --build-arg --no-cache -t {{ .APP }}:latest .'

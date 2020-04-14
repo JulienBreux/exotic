@@ -1,0 +1,42 @@
+# Sizes
+- name: size/XXS
+  description: Size XXS
+  color: EBDEF0
+- name: size/XS
+  color: D7BDE2
+  description: Size XS
+- name: size/S
+  description: Size S
+  color: C39BD3
+- name: size/M
+  description: Size M
+  color: 9B59B6
+- name: size/L
+  description: Size L
+  color: 884EA0
+- name: size/XL
+  description: Size XL
+  color: 76448A
+- name: size/XXL
+  description: Size XXL
+  color: 512E5F
+# Types
+- name: type/Feature
+  description: New feature request
+  color: 52BE80
+- name: 'type/Feature Request'
+  description: New feature request
+  color: 52BE80
+- name: type/Documentation
+  description: Improvements or additions to documentation
+  color: 5DADE2
+- name: type/Bug
+  description: Something isn't working
+  color: EC7063
+# Workflow
+- name: workflow/automerge
+  description: Auto-merge
+  color: 8AFF33
+- name: workflow/wip
+  description: Work in progress
+  color: D733FF
