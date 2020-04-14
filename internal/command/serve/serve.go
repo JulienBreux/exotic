@@ -40,7 +40,6 @@ func initConfig(lgr zerolog.Logger) *config.Config {
 }
 
 func initLogger(c *config.Config, lgr zerolog.Logger) zerolog.Logger {
-	// Init logger
 	if c.LoggerFormat == "text" {
 		lgr = lgr.Output(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339})
 	}
