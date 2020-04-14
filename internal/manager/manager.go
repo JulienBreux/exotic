@@ -44,18 +44,7 @@ func (m *Manager) Start() error {
 
 	// Manage service interuption
 	ctx, cancel := context.WithCancel(m.ctx)
-	go func() {
-		// Stop :(
-		ch := make(chan os.Signal, 1)
-		signal.Notify(ch, syscall.SIGTERM, syscall.SIGINT)
-		m.log.Info().Str("reason", (<-ch).String()).Msg("Stopping...")
-		cancel()
-
-		if err := m.Stop(); err != nil {
-			m.log.Error().Err(err).Msg("Stopping error")
-		}
-		m.log.Info().Msg("Stopped")
-	}()
+	go m.interrupt(ctx, cancel)
 
 	// Manage components life cycle
 	m.log.Debug().Msg("Starting...")
@@ -82,4 +71,16 @@ func (m *Manager) Stop() error {
 	}
 
 	return nil
+}
+
+func (m *Manager) interrupt(ctx context.Context, c context.CancelFunc) {
+	ch := make(chan os.Signal, 1)
+	signal.Notify(ch, syscall.SIGTERM, syscall.SIGINT)
+	m.log.Info().Str("reason", (<-ch).String()).Msg("Stopping...")
+	c()
+
+	if err := m.Stop(); err != nil {
+		m.log.Error().Err(err).Msg("Stopping error")
+	}
+	m.log.Info().Msg("Stopped")
 }

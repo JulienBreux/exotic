@@ -24,17 +24,26 @@ func New() *cobra.Command {
 
 func serveRun(cmd *cobra.Command, args []string) {
 	lgr := log.With().Logger()
-	// Init configuration
+
+	c := initConfig(lgr)
+	lgr = initLogger(c, lgr)
+	initManager(c, lgr)
+}
+
+func initConfig(lgr zerolog.Logger) *config.Config {
 	c, err := config.New()
 	if err != nil {
 		lgr.Error().Str("process", "global").Err(err).Msg("Unable to load environment variable")
 		os.Exit(1)
 	}
+	return c
+}
+
+func initLogger(c *config.Config, lgr zerolog.Logger) zerolog.Logger {
+	// Init logger
 	if c.LoggerFormat == "text" {
 		lgr = lgr.Output(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339})
 	}
-
-	// Init logger
 	level, _ := zerolog.ParseLevel(c.LoggerLevel)
 	zerolog.SetGlobalLevel(level)
 	if c.Debug {
@@ -43,7 +52,10 @@ func serveRun(cmd *cobra.Command, args []string) {
 		lgr.Debug().RawJSON("config", c.JSON()).Str("process", "global").Msg("Environment variables loaded")
 	}
 
-	// Init manager
+	return lgr
+}
+
+func initManager(c *config.Config, lgr zerolog.Logger) {
 	ctx := context.Background()
 	m := manager.New(ctx, c, lgr)
 	// TODO: m.Add(exampleComponent.New(c, lgr))
