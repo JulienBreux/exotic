@@ -6,81 +6,91 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
 	"golang.org/x/sync/errgroup"
-
-	"github.com/julienbreux/exotic/internal/config"
 )
 
-// Manager represents the manager structure
-type Manager struct {
-	ctx  context.Context
-	conf *config.Config
-	log  zerolog.Logger
+const defaultProcess = "manager"
+
+type manager struct {
+	opt *Options
+	lgr zerolog.Logger
+	ctx context.Context
 
 	cmpts []Component
 }
 
-// New returns a manager instance
-func New(ctx context.Context, conf *config.Config, log zerolog.Logger) *Manager {
-	return &Manager{
-		ctx:  ctx,
-		conf: conf,
-		log:  log.With().Str("process", "manager").Logger(),
-
-		cmpts: []Component{},
+// New creates a new manager instance
+func New(opts ...Option) (Manager, error) {
+	opt, err := newOptions(opts...)
+	if err != nil {
+		return nil, err
 	}
+
+	return &manager{
+		opt: opt,
+		lgr: opt.Logger.Log().With().Str("process", defaultProcess).Logger(),
+		ctx: opt.Context,
+
+		cmpts: opt.Components,
+	}, nil
 }
 
-// Add adds a new components in the manager
-func (m *Manager) Add(c Component) error {
-	m.cmpts = append(m.cmpts, c)
-
-	return nil
+// Options returns the list of options
+func (m *manager) Options() *Options {
+	return m.opt
 }
 
-// Start starts the manager
-func (m *Manager) Start() error {
-
+// Run ran the manager
+func (m *manager) Run() error {
 	// Manage service interuption
 	ctx, cancel := context.WithCancel(m.ctx)
 	go m.interrupt(ctx, cancel)
 
 	// Manage components life cycle
-	m.log.Debug().Msg("Starting...")
+	m.lgr.Debug().Msg("Starting components...")
 	eg, ctx := errgroup.WithContext(ctx)
+
 	for _, c := range m.cmpts {
 		eg.Go(func() error {
 			return c.Start(ctx)
 		})
 	}
 
-	m.log.Info().Msg("Started")
+	m.lgr.Info().Msg("All component started")
 
 	if err := eg.Wait(); err != nil {
-		m.log.Error().Err(err).Msg("Starting error")
+		m.lgr.Error().Err(err).Msg("Starting error")
+		return errors.Wrap(err, "Unable to start components")
 	}
 
 	return nil
 }
 
 // Stop stops the  manager
-func (m *Manager) Stop() error {
+func (m *manager) Stop() (err error) {
 	for _, c := range m.cmpts {
-		_ = c.Stop()
+		if err = c.Stop(); err != nil {
+			err = errors.Wrap(err, "unable to stop component")
+			m.lgr.Warn().Err(err).Msgf("Unable to stop component %s", "")
+		}
 	}
 
-	return nil
+	if err == nil {
+		m.lgr.Info().Msg("All components stopped")
+	}
+
+	return
 }
 
-func (m *Manager) interrupt(ctx context.Context, c context.CancelFunc) {
+func (m *manager) interrupt(ctx context.Context, c context.CancelFunc) {
 	ch := make(chan os.Signal, 1)
 	signal.Notify(ch, syscall.SIGTERM, syscall.SIGINT)
-	m.log.Info().Str("reason", (<-ch).String()).Msg("Stopping...")
+	m.lgr.Info().Str("reason", (<-ch).String()).Msg("Stopping...")
 	c()
-
 	if err := m.Stop(); err != nil {
-		m.log.Error().Err(err).Msg("Stopping error")
+		m.lgr.Error().Err(err).Msg("Stopping error")
 	}
-	m.log.Info().Msg("Stopped")
+	m.lgr.Info().Msg("Stopped")
 }
