@@ -40,13 +40,6 @@ func newOptions(opts ...Option) (*Options, error) {
 	return &opt, nil
 }
 
-// DefaultFields fields option
-// func DefaultFields(fields ...Field) Option {
-// 	return func(o *Options) {
-// 		o.DefaultFields = fields
-// 	}
-// }
-
 // Level option
 func Level(level string) Option {
 	return func(o *Options) {
