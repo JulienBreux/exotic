@@ -15,6 +15,8 @@ type Option func(*Options)
 // Options represents the list of options
 type Options struct {
 	Logger logger.Logger `ignored:"true" json:"-"`
+
+	Port int `default:"8181" envconfig:"port"`
 }
 
 func newOptions(opts ...Option) (*Options, error) {
@@ -39,8 +41,15 @@ func newOptions(opts ...Option) (*Options, error) {
 }
 
 // Logger option
-func Logger(logger logger.Logger) Option {
+func Logger(v logger.Logger) Option {
 	return func(o *Options) {
-		o.Logger = logger
+		o.Logger = v
+	}
+}
+
+// Port option
+func Port(v int) Option {
+	return func(o *Options) {
+		o.Port = v
 	}
 }
