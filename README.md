@@ -1,4 +1,4 @@
-# 🌴Exotic™ — Secret project
+# 🌴Exotic™ — Another simple Kubernetes dashboard
 
 [![Actions Status](https://github.com/JulienBreux/exotic/workflows/go/badge.svg)](https://github.com/JulienBreux/exotic/actions)
 [![Go Report Card](https://goreportcard.com/badge/github.com/JulienBreux/exotic)](https://goreportcard.com/report/github.com/JulienBreux/exotic)
