@@ -6,9 +6,9 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/julienbreux/exotic/internal/agent"
 	"github.com/julienbreux/exotic/internal/logger"
 	"github.com/julienbreux/exotic/internal/manager"
+	"github.com/julienbreux/exotic/internal/master"
 )
 
 // New creates a new command instance
@@ -22,18 +22,17 @@ func New(lgr logger.Logger) *cobra.Command {
 
 func run(lgr logger.Logger) func(cmd *cobra.Command, args []string) {
 	return func(cmd *cobra.Command, args []string) {
-		// Agent
-		agt, _ := agent.New(agent.Logger(lgr))
+		// Master
+		mstr, _ := master.New(master.Logger(lgr))
 
 		// Manager
 		m, _ := manager.New(
 			manager.Logger(lgr),
 			manager.Context(context.Background()),
-			manager.AddComponent(agt),
+			manager.AddComponent(mstr),
 		)
 		if err := m.Run(); err != nil {
 			os.Exit(1)
 		}
-		_ = m.Stop()
 	}
 }
