@@ -41,36 +41,36 @@ func newOptions(opts ...Option) (*Options, error) {
 }
 
 // Level option
-func Level(level string) Option {
+func Level(v string) Option {
 	return func(o *Options) {
-		o.Level = level
+		o.Level = v
 	}
 }
 
 // Format option
-func Format(format string) Option {
+func Format(v string) Option {
 	return func(o *Options) {
-		o.Format = format
+		o.Format = v
 	}
 }
 
 // InstName option
-func InstName(instName string) Option {
+func InstName(v string) Option {
 	return func(o *Options) {
-		o.InstName = instName
+		o.InstName = v
 	}
 }
 
 // InstVersion option
-func InstVersion(instVersion string) Option {
+func InstVersion(v string) Option {
 	return func(o *Options) {
-		o.InstVersion = instVersion
+		o.InstVersion = v
 	}
 }
 
 // Debug option
-func Debug(debug bool) Option {
+func Debug(v bool) Option {
 	return func(o *Options) {
-		o.Debug = debug
+		o.Debug = v
 	}
 }

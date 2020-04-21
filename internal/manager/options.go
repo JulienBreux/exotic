@@ -44,22 +44,22 @@ func newOptions(opts ...Option) (*Options, error) {
 }
 
 // Logger option
-func Logger(logger logger.Logger) Option {
+func Logger(v logger.Logger) Option {
 	return func(o *Options) {
-		o.Logger = logger
+		o.Logger = v
 	}
 }
 
 // Context option
-func Context(ctx context.Context) Option {
+func Context(v context.Context) Option {
 	return func(o *Options) {
-		o.Context = ctx
+		o.Context = v
 	}
 }
 
 // AddComponent option
-func AddComponent(cpt Component) Option {
+func AddComponent(v Component) Option {
 	return func(o *Options) {
-		o.Components = append(o.Components, cpt)
+		o.Components = append(o.Components, v)
 	}
 }
